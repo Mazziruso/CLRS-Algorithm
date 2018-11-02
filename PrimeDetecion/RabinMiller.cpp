@@ -8,6 +8,11 @@ using namespace std;
 
 typedef long long ll;
 
+//generate long long int random integer
+ll llrand() {
+	return ((((ll) rand()<<32) & 0xFFFFFFFF00000000) | ((ll) rand()) & 0x00000000FFFFFFFF);
+}
+
 ll mod_mul(ll a, ll b, ll n) {
 	ll res = 0;
 	while (b) {
@@ -67,7 +72,7 @@ bool witness(ll a, ll n) {
 bool rabinMiller(ll n, int s) {
 	ll a;
 	while (s--) {
-		a = (rand() % (n - 1)) + 1; // 1 <= a <= n-1
+		a = (llrand() % (n - 1)) + 1; // 1 <= a <= n-1
 		if (witness(a, n)) {
 			return false;
 		}
@@ -82,12 +87,12 @@ int main() {
 	ll n;
 	int s = 20;
 	for (int i = 0; i < 30; i++) {
-		n = rand();
+		n = llrand() % 10000;
 		if (rabinMiller(n, s)) {
 			printf("%lld is a prime\n", n);
 		}
 		else {
-			printf("%d is a composite\n", n);
+			printf("%lld is a composite\n", n);
 		}
 	}
 

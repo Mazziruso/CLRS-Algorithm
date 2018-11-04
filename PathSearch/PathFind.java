@@ -1,24 +1,23 @@
-package Demo;
+package PathSearch;
 
 import java.util.ArrayDeque;
 import java.util.PriorityQueue;
-import java.util.Comparator;
 
 public class PathFind {
 
     public static void main(String[] args) {
         int wall = Integer.MAX_VALUE;
         int graphs[][] = {{1,1,1,1,1,1},
-                          {1,1,1,1,wall,1},
-                          {1,1,1,1,wall,1},
-                          {1,1,1,1,wall,1},
-                          {1,1,1,1,wall,1},
-                          {1,1,1,1,wall,1},
-                          {1,1,1,1,wall,1},
-                          {1,1,1,1,wall,1},
-                          {1,1,1,1,wall,1},
-                          {1,1,1,1,wall,1},
-                          {1,1,1,1,1,1}};
+                {1,1,1,1,wall,1},
+                {1,1,1,1,wall,1},
+                {1,1,1,1,wall,1},
+                {1,1,1,1,wall,1},
+                {1,1,1,1,wall,1},
+                {1,1,1,1,wall,1},
+                {1,1,1,1,wall,1},
+                {1,1,1,1,wall,1},
+                {1,1,1,1,wall,1},
+                {1,1,1,1,1,1}};
 
         Graph G = new Graph(graphs);
 
@@ -47,6 +46,10 @@ class Graph {
     int cols;
     node[][] nodes;
 
+    //四个方向增量
+    static int Xadd[] = {1,-1,0,0};
+    static int Yadd[] = {0,0,1,-1};
+
     public Graph(int[][] costs) {
         this.rows = costs.length;
         this.cols = costs[0].length;
@@ -67,56 +70,6 @@ class Graph {
                 nodes[i][j].prev = null;
             }
         }
-    }
-
-    //四个方向
-    public node[] neighborNodes(node current) {
-        node[] nexts;
-        if(current.col == 0 && current.row == 0) {
-            nexts = new node[2];
-            nexts[0] = this.nodes[current.row][current.col+1];
-            nexts[1] = this.nodes[current.row+1][current.col];
-        } else if(current.row==this.rows-1 && current.col==this.cols-1) {
-            nexts = new node[2];
-            nexts[0] = this.nodes[current.row][current.col-1];
-            nexts[1] = this.nodes[current.row-1][current.col];
-        } else if(current.col==0 && current.row==this.rows-1) {
-            nexts = new node[2];
-            nexts[0] = this.nodes[current.row - 1][current.col];
-            nexts[1] = this.nodes[current.row][current.col + 1];
-        } else if(current.row==0 && current.col==this.cols-1) {
-            nexts = new node[2];
-            nexts[0] = this.nodes[current.row][current.col-1];
-            nexts[1] = this.nodes[current.row+1][current.col];
-        } else if(current.row == 0) {
-            nexts = new node[3];
-            nexts[0] = this.nodes[current.row][current.col-1];
-            nexts[1] = this.nodes[current.row][current.col+1];
-            nexts[2] = this.nodes[current.row+1][current.col];
-        } else if(current.col ==0) {
-            nexts = new node[3];
-            nexts[0] = this.nodes[current.row-1][current.col];
-            nexts[1] = this.nodes[current.row+1][current.col];
-            nexts[2] = this.nodes[current.row][current.col+1];
-        } else if(current.row == this.rows-1) {
-            nexts = new node[3];
-            nexts[0] = this.nodes[current.row][current.col-1];
-            nexts[1] = this.nodes[current.row][current.col+1];
-            nexts[2] = this.nodes[current.row-1][current.col];
-        } else if(current.col == this.cols-1) {
-            nexts = new node[3];
-            nexts[0] = this.nodes[current.row-1][current.col];
-            nexts[1] = this.nodes[current.row+1][current.col];
-            nexts[2] = this.nodes[current.row][current.col-1];
-        } else {
-            nexts = new node[4];
-            nexts[0] = this.nodes[current.row][current.col-1];
-            nexts[1] = this.nodes[current.row][current.col+1];
-            nexts[2] = this.nodes[current.row+1][current.col];
-            nexts[3] = this.nodes[current.row-1][current.col];
-        }
-
-        return nexts;
     }
 
     //启发式评估函数，用曼哈顿距离
@@ -144,7 +97,10 @@ class Graph {
             if(current.row==dest.x && current.col==dest.y) {
                 break;
             }
-            for (node next: G.neighborNodes(current)) {
+            for (int i=0; i<4; i++) {
+                int newX = current.row + Graph.Xadd[i];
+                int newY = current.col + Graph.Yadd[i];
+                node next = G.nodes[newX][newY];
                 if(!visit[next.row][next.col] && next.cost < Integer.MAX_VALUE) {
                     frontier.add(next);
                     next.prev = current;
@@ -189,7 +145,10 @@ class Graph {
             if(current==goal) {
                 break;
             }
-            for(node next : G.neighborNodes(current)) {
+            for(int i=0; i<4; i++) {
+                int newX = current.row + Graph.Xadd[i];
+                int newY = current.col + Graph.Yadd[i];
+                node next = G.nodes[newX][newY];
                 cost = currentCost.cost + next.cost;
                 if(!visit[next.row][next.col] && next.cost<Integer.MAX_VALUE && (costSoFar[next.row][next.col]<=0 || cost<costSoFar[next.row][next.col])) {
                     costSoFar[next.row][next.col] = cost;
@@ -233,8 +192,11 @@ class Graph {
             if(current==goal) {
                 break;
             }
-            for(node next : G.neighborNodes(current)) {
-                if(!visit[next.row][next.col] && next.cost<Integer.MAX_VALUE) {
+            for(int i=0; i<4; i++) {
+                int newX = current.row + Graph.Xadd[i];
+                int newY = current.col + Graph.Yadd[i];
+                node next = G.nodes[newX][newY];
+                if(!visit[newX][newY] && next.cost<Integer.MAX_VALUE) {
                     priority = heuristic(goal,next);
                     frontier.add(new CostFromStart(next,priority));
                     next.prev = current;
@@ -282,7 +244,10 @@ class Graph {
                 break;
             }
 
-            for(node next : G.neighborNodes(current)) {
+            for(int i=0; i<4; i++) {
+                int newX = current.row + Graph.Xadd[i];
+                int newY = current.col + Graph.Yadd[i];
+                node next = G.nodes[newX][newY];
                 cost = costSoFar[next.row][next.col] + next.cost;
                 if(!visit[next.row][next.col] && next.cost<Integer.MAX_VALUE && (costSoFar[next.row][next.col]<=0 || cost<costSoFar[next.row][next.col])) {
                     costSoFar[next.row][next.col] = cost;

@@ -2,8 +2,7 @@
 #include <cstdio>
 #include <cmath>
 #include <algorithm>
-#include <vector>
-#include <map>
+#include <queue>
 
 using namespace std;
 
@@ -49,8 +48,27 @@ public:
 		}
 	}
 
+	static void levelOrder(node *root) {
+		queue<node*> q;
+		node *n;
+		q.push(root);
+		while (!q.empty()) {
+			n = q.front();
+			q.pop();
+			printf("%d ", n->key);
+			if (n->l->H != 0) {
+				q.push(n->l);
+			}
+			if (n->r->H != 0) {
+				q.push(n->r);
+			}
+		}
+	}
+
 	static void update(node *root) {
-		root->H = max(root->l->H, root->r->H) + 1;
+		if(root->H != 0) {
+			root->H = max(root->l->H, root->r->H) + 1;
+		}
 	}
 
 	static node* left_rotate(node *root) {
@@ -149,27 +167,13 @@ public:
 			}
 		}
 		else if (key == root->key) { //find the succesive node and alternate the current node
-			if (root->r->H == 0) {
-				root = root->l;
+			if (root->H == 1) {
+				root = new node();
 			}
 			else {
-				node *sucParent;
-				node *suc;
-				if (root->r->H == 1) {
-					sucParent = root;
-					suc = root->r;
-					root->r = new node();
-				}
-				else {
-					sucParent = findSuccessor(root->r);
-					suc = sucParent->l;
-					sucParent->l = new node();
-				}
-
-				suc->l = root->l;
-				suc->r = root->r;
-				root = suc;
-
+				node *suc = minimum(root->r);
+				root->key = suc->key;
+				root->r = deleteNode(root->r, suc->key);
 				if (root->r->H + 1 < root->l->H) {
 					if (root->l->l->H > root->l->r->H) {
 						root = LL(root);
@@ -193,13 +197,6 @@ public:
 		}
 		update(root);
 		return root;
-	}
-
-	static node* findSuccessor(node *root) { //find the parent node of successor node recursively
-		if (root->l->H == 1) {
-			return root;
-		}
-		return findSuccessor(root->l);
 	}
 
 	static node* search(node *root, int key) {
@@ -244,6 +241,13 @@ int main() {
 	Tree = AVLTree::insert(Tree, 120);
 	Tree = AVLTree::insert(Tree, 90);
 	Tree = AVLTree::insert(Tree, 65);
+
+	AVLTree::inOrder(Tree);
+	printf("\n");
+	AVLTree::levelOrder(Tree);
+	printf("\n");
+
+	Tree = AVLTree::deleteNode(Tree, 88);
 
 	AVLTree::inOrder(Tree);
 	printf("\n");

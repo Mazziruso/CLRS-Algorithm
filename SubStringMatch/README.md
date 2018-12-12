@@ -31,12 +31,8 @@
 	* 如果该字符没有在模式pattern中出现则直接跳过，即为移动长度为模式串长度+1
 	* 否则移动长度=模式串长度-该字符最右出现位置=模式串中该字符最右出现的位置到尾部距离+1
 * 偏移表计算
-	* ```
-	shift[w] = m - max{i < m|P[i] = w},w is in P[0...m-1]
-	```
-	* ```
-	shift[w] = m + 1, otherwise
-	```
+	* `shift[w] = m - max{i < m|P[i] = w},w is in P[0...m-1]`
+	* `shift[w] = m + 1, otherwise`
 	* 偏移表下标为字符的ASCII码
 * 预处理时间复杂度为：`O(m+|A|), A denotes char set`
 * 平均时间复杂度为：`O(n)`
